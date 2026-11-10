@@ -25,6 +25,57 @@ function setStatus(message) {
   statusElements.forEach((element) => { element.textContent = message; });
 }
 
+function createConfirmationDialog(reservation) {
+  const dialog = document.createElement("dialog");
+  dialog.className = "surface max-w-md rounded-2xl p-6";
+  const heading = document.createElement("h2");
+  heading.className = "text-2xl font-bold";
+  heading.textContent = "Бронювання підтверджено";
+  const text = document.createElement("p");
+  text.className = "muted mt-3";
+  text.textContent = `Код бронювання: ${reservation.code}. Столик ${reservation.tableId}, ${reservation.date} о ${reservation.time}.`;
+  const actions = document.createElement("div");
+  actions.className = "mt-6 flex flex-wrap gap-3";
+  const calendar = document.createElement("button");
+  calendar.className = "brand-button min-h-12 rounded-xl px-4 py-3 font-bold";
+  calendar.type = "button";
+  calendar.textContent = "Додати в календар";
+  calendar.addEventListener("click", () => {
+    const start = `${reservation.date.replaceAll("-", "")}T${reservation.time.replace(":", "")}00`;
+    const end = new Date(`${reservation.date}T${reservation.time}:00`);
+    end.setMinutes(end.getMinutes() + reservation.duration);
+    const endValue = end.toISOString().replaceAll("-", "").replaceAll(":", "").slice(0, 15) + "00";
+    const ics = [
+      "BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//KavaLab//Reservation//UK",
+      "BEGIN:VEVENT", `UID:${reservation.code}@kavalab.example`, `DTSTART:${start}`, `DTEND:${endValue}`,
+      `SUMMARY:Бронювання КаваLab ${reservation.tableId}`, "END:VEVENT", "END:VCALENDAR"
+    ].join("\r\n");
+    const url = URL.createObjectURL(new Blob([ics], { type: "text/calendar;charset=utf-8" }));
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `${reservation.code}.ics`;
+    link.click();
+    URL.revokeObjectURL(url);
+  });
+  const print = document.createElement("button");
+  print.className = "min-h-12 rounded-xl border px-4 py-3 font-bold";
+  print.style.borderColor = "var(--border)";
+  print.type = "button";
+  print.textContent = "Друк";
+  print.addEventListener("click", () => window.print());
+  const close = document.createElement("button");
+  close.className = "min-h-12 rounded-xl border px-4 py-3 font-bold";
+  close.style.borderColor = "var(--border)";
+  close.type = "button";
+  close.textContent = "Закрити";
+  close.addEventListener("click", () => dialog.close());
+  actions.append(calendar, print, close);
+  dialog.append(heading, text, actions);
+  document.body.append(dialog);
+  dialog.addEventListener("close", () => dialog.remove(), { once: true });
+  dialog.showModal();
+}
+
 function renderTimes() {
   const select = document.querySelector("[data-time]");
   select.replaceChildren();
@@ -146,6 +197,12 @@ document.querySelectorAll("[data-next]").forEach((button) => button.addEventList
   const errors = validateReservation(input);
   if (state.step === 1 && errors.length) { setStatus(errors.join(" ")); return; }
   if (state.step === 2 && !state.tableId) { setStatus("Оберіть вільний столик."); return; }
+  if (state.step === 2 && isBusy({ tableId: state.tableId, date: dateInput.value, time: document.querySelector("[data-time]").value, duration: Number(document.querySelector("[data-duration]").value), reservations: state.reservations })) {
+    state.tableId = null;
+    setStatus("Обраний столик щойно став недоступним. Оберіть інший.");
+    renderMap();
+    return;
+  }
   setStatus("");
   showStep(state.step + 1);
 }));
@@ -156,7 +213,8 @@ form.addEventListener("submit", (event) => {
   const name = document.querySelector("[data-name]").value;
   const phone = normalizePhone(document.querySelector("[data-phone]").value);
   const email = document.querySelector("[data-email]").value;
-  if (!validateField("name", name) || !validateField("phone", phone) || !validateField("email", email) || !document.querySelector("[data-consent]").checked) {
+  const reservationInput = { date: dateInput.value, time: document.querySelector("[data-time]").value, duration: document.querySelector("[data-duration]").value, guests: Number(document.querySelector("[data-guests]").value) };
+  if (validateReservation(reservationInput).length || !state.tableId || isBusy({ tableId: state.tableId, ...reservationInput, reservations: state.reservations }) || !validateField("name", name) || !validateField("phone", phone) || !validateField("email", email) || !document.querySelector("[data-consent]").checked) {
     setStatus("Перевірте ім'я, телефон, email і згоду.");
     return;
   }
@@ -165,6 +223,7 @@ form.addEventListener("submit", (event) => {
   writeStorage(RESERVATIONS_KEY, state.reservations);
   renderReservations();
   setStatus(`Бронювання підтверджено. Код: ${reservation.code}`);
+  createConfirmationDialog(reservation);
   showStep(1);
 });
 

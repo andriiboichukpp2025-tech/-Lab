@@ -32,8 +32,9 @@ export function validateReservation(input, now = new Date()) {
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const maxDate = new Date(today);
   maxDate.setDate(maxDate.getDate() + 30);
+  const dateOnly = input.date ? new Date(`${input.date}T00:00:00`) : Number.NaN;
   const lastDate = new Date(`${input.date}T22:00:00`);
-  if (!input.date || Number.isNaN(date.getTime()) || date < today || date > maxDate) errors.push("Оберіть дату в межах наступних 30 днів.");
+  if (!input.date || Number.isNaN(dateOnly.getTime()) || dateOnly < today || dateOnly > maxDate) errors.push("Оберіть дату в межах наступних 30 днів.");
   if (!input.time || Number.isNaN(date.getTime()) || date.getHours() < 9 || date.getHours() > 20 || (date.getHours() === 20 && date.getMinutes() > 30)) errors.push("Оберіть час від 09:00 до 20:30.");
   if (input.date === today.toISOString().slice(0, 10) && date.getTime() < now.getTime() + 30 * 60000) errors.push("Для сьогоднішньої дати оберіть час не раніше ніж через 30 хвилин.");
   if (![60, 90, 120].includes(Number(input.duration)) || date.getTime() + Number(input.duration) * 60000 > lastDate.getTime()) errors.push("Перевірте тривалість бронювання.");
