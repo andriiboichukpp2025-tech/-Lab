@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://kavalab.vercel.app/sitemap.xml

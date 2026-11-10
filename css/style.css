@@ -1,0 +1,88 @@
+:root {
+  color-scheme: light;
+  --page-bg: #fbf7f2;
+  --surface: #ffffff;
+  --text: #2b1e19;
+  --muted: #6b5a50;
+  --border: #e6ddd3;
+  --brand: #8a4b2a;
+  --brand-hover: #6f3a1f;
+  --focus: #1d5f3b;
+}
+
+.dark {
+  color-scheme: dark;
+  --page-bg: #17110e;
+  --surface: #221915;
+  --text: #f3e9e0;
+  --muted: #bdaa9c;
+  --border: #3a2d26;
+  --brand: #e0a27a;
+  --brand-hover: #f0b993;
+  --focus: #9ed5ae;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--page-bg);
+  color: var(--text);
+  font-family: "Manrope", system-ui, sans-serif;
+}
+
+*:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+
+.skip-link {
+  position: absolute;
+  left: 1rem;
+  top: -5rem;
+  z-index: 50;
+  padding: .75rem 1rem;
+  border-radius: .75rem;
+  background: var(--brand);
+  color: #fff;
+}
+
+.skip-link:focus {
+  top: 1rem;
+}
+
+.surface {
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.brand-button {
+  background: var(--brand);
+  color: #fff;
+}
+
+.brand-button:hover {
+  background: var(--brand-hover);
+}
+
+.dark .brand-button {
+  color: #1a110d;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: .01ms !important;
+    transition-duration: .01ms !important;
+  }
+}

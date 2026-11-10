@@ -1,0 +1,44 @@
+{
+  "sizes": {
+    "s": { "label": "Малий", "milliliters": 250 },
+    "m": { "label": "Середній", "milliliters": 350 },
+    "l": { "label": "Великий", "milliliters": 450 }
+  },
+  "bases": [
+    { "id": "espresso", "name": "Еспресо", "requiresMilk": false, "prices": { "s": 45 } },
+    { "id": "americano", "name": "Американо", "requiresMilk": false, "prices": { "s": 55, "m": 65, "l": 75 } },
+    { "id": "cappuccino", "name": "Капучино", "requiresMilk": true, "prices": { "s": 70, "m": 85, "l": 100 } },
+    { "id": "latte", "name": "Лате", "requiresMilk": true, "prices": { "s": 75, "m": 90, "l": 105 } },
+    { "id": "flat_white", "name": "Флет вайт", "requiresMilk": true, "prices": { "m": 95, "l": 110 } },
+    { "id": "raf", "name": "Раф", "requiresMilk": true, "prices": { "s": 85, "m": 100, "l": 115 } },
+    { "id": "matcha_latte", "name": "Матча лате", "requiresMilk": true, "prices": { "s": 90, "m": 105, "l": 120 } },
+    { "id": "hot_chocolate", "name": "Гарячий шоколад", "requiresMilk": true, "prices": { "s": 80, "m": 95, "l": 110 } },
+    { "id": "cold_brew", "name": "Колд брю", "requiresMilk": false, "prices": { "m": 85, "l": 100 } },
+    { "id": "iced_latte", "name": "Айс лате", "requiresMilk": true, "prices": { "m": 95, "l": 110 } }
+  ],
+  "milks": [
+    { "id": "none", "name": "Без молока", "price": 0 },
+    { "id": "cow", "name": "Коров'яче", "price": 0 },
+    { "id": "lactose_free", "name": "Безлактозне", "price": 10 },
+    { "id": "oat", "name": "Вівсяне", "price": 15 },
+    { "id": "soy", "name": "Соєве", "price": 15 },
+    { "id": "almond", "name": "Мигдальне", "price": 20 },
+    { "id": "coconut", "name": "Кокосове", "price": 20 }
+  ],
+  "syrups": [
+    { "id": "vanilla", "name": "Ванільний" },
+    { "id": "caramel", "name": "Карамельний" },
+    { "id": "hazelnut", "name": "Фундуковий" },
+    { "id": "coconut", "name": "Кокосовий" },
+    { "id": "salted_caramel", "name": "Солона карамель" },
+    { "id": "lavender", "name": "Лавандовий" }
+  ],
+  "syrupPrice": 12,
+  "extras": [
+    { "id": "extra_shot", "name": "Додатковий еспресо", "price": 25 },
+    { "id": "whipped_cream", "name": "Збиті вершки", "price": 15 },
+    { "id": "cinnamon", "name": "Кориця", "price": 5 },
+    { "id": "marshmallow", "name": "Маршмелоу", "price": 15 },
+    { "id": "chocolate_topping", "name": "Шоколадний топінг", "price": 15 }
+  ]
+}
