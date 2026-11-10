@@ -74,6 +74,48 @@ body {
   color: #1a110d;
 }
 
+.reservation-map {
+  display: block;
+  min-height: 420px;
+}
+
+.map-wall {
+  fill: var(--surface);
+  stroke: var(--border);
+  stroke-width: 6;
+}
+
+.map-bar {
+  fill: var(--border);
+}
+
+.table-shape {
+  fill: #2f6b45;
+  stroke: var(--text);
+  stroke-width: 3;
+}
+
+.table-busy .table-shape {
+  fill: url("#busy-pattern");
+  opacity: .45;
+}
+
+.table-selected .table-shape {
+  fill: var(--brand);
+  stroke-width: 6;
+}
+
+.table-busy {
+  cursor: not-allowed;
+}
+
+.table-shape + text {
+  fill: #fff;
+  font-size: 15px;
+  font-weight: 800;
+  pointer-events: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;

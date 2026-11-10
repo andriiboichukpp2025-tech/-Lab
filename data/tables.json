@@ -1,1 +1,20 @@
-{ "tables": [] }
+{
+  "tables": [
+    { "id": "W1", "zone": "Біля вікна", "capacity": 2, "shape": "circle", "x": 90, "y": 120, "radius": 26, "features": ["вікно", "розетка"] },
+    { "id": "W2", "zone": "Біля вікна", "capacity": 2, "shape": "circle", "x": 90, "y": 215, "radius": 26, "features": ["вікно", "розетка"] },
+    { "id": "W3", "zone": "Біля вікна", "capacity": 2, "shape": "circle", "x": 90, "y": 310, "radius": 26, "features": ["вікно", "розетка"] },
+    { "id": "W4", "zone": "Біля вікна", "capacity": 2, "shape": "circle", "x": 90, "y": 405, "radius": 26, "features": ["вікно", "розетка"] },
+    { "id": "H1", "zone": "Зал", "capacity": 4, "shape": "rect", "x": 230, "y": 150, "width": 70, "height": 70, "features": [] },
+    { "id": "H2", "zone": "Зал", "capacity": 4, "shape": "rect", "x": 370, "y": 150, "width": 70, "height": 70, "features": [] },
+    { "id": "H3", "zone": "Тиха зона", "capacity": 4, "shape": "rect", "x": 230, "y": 280, "width": 70, "height": 70, "features": ["тиха зона"] },
+    { "id": "H4", "zone": "Зал", "capacity": 6, "shape": "rect", "x": 370, "y": 300, "width": 140, "height": 64, "features": ["для компанії"] },
+    { "id": "B1", "zone": "Бар", "capacity": 1, "shape": "circle", "x": 480, "y": 108, "radius": 16, "features": ["вид на бар"] },
+    { "id": "B2", "zone": "Бар", "capacity": 1, "shape": "circle", "x": 540, "y": 108, "radius": 16, "features": ["вид на бар"] },
+    { "id": "B3", "zone": "Бар", "capacity": 1, "shape": "circle", "x": 600, "y": 108, "radius": 16, "features": ["вид на бар"] },
+    { "id": "B4", "zone": "Бар", "capacity": 1, "shape": "circle", "x": 660, "y": 108, "radius": 16, "features": ["вид на бар"] },
+    { "id": "B5", "zone": "Бар", "capacity": 1, "shape": "circle", "x": 720, "y": 108, "radius": 16, "features": ["вид на бар"] },
+    { "id": "L1", "zone": "Лаунж", "capacity": 4, "shape": "rect", "x": 700, "y": 225, "width": 90, "height": 70, "features": ["диван"] },
+    { "id": "L2", "zone": "Лаунж", "capacity": 4, "shape": "rect", "x": 700, "y": 330, "width": 90, "height": 70, "features": ["диван"] },
+    { "id": "L3", "zone": "Лаунж", "capacity": 8, "shape": "circle", "x": 580, "y": 430, "radius": 55, "features": ["для компанії"] }
+  ]
+}

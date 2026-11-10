@@ -1,5 +1,6 @@
 import { initializeTheme } from "../modules/theme.js";
 import { updateCartCount } from "../modules/cart.js";
+import { addToCart } from "../modules/cart.js";
 import { loadJson } from "../modules/data.js";
 
 initializeTheme();
@@ -45,10 +46,18 @@ function render() {
     footer.className = "mt-5 flex items-center justify-between gap-3";
     const price = document.createElement("strong");
     price.textContent = item.price === null ? "Від 45 ₴" : `${item.price} ₴`;
-    const link = document.createElement("a");
+    const link = document.createElement(item.builderBase ? "a" : "button");
     link.className = "brand-button rounded-xl px-4 py-3 text-sm font-bold";
-    link.href = item.builderBase ? `builder.html?b=${encodeURIComponent(item.builderBase)}` : "cart.html";
     link.textContent = item.builderBase ? "Налаштувати" : "Додати";
+    if (item.builderBase) {
+      link.href = `builder.html?b=${encodeURIComponent(item.builderBase)}`;
+    } else {
+      link.type = "button";
+      link.addEventListener("click", () => {
+        addToCart({ id: `menu:${item.id}`, name: item.name, description: item.description, unitCents: item.price * 100, quantity: 1 });
+        status.textContent = `${item.name} додано до кошика.`;
+      });
+    }
     footer.append(price, link);
     content.append(title, description, footer);
     card.append(image, content);
