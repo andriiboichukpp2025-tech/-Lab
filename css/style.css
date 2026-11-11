@@ -136,6 +136,49 @@ body {
   color: #8a4b2a;
 }
 
+.review-stars {
+  color: var(--brand);
+  letter-spacing: .12em;
+}
+
+.review-card {
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.review-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 1rem 2rem color-mix(in srgb, var(--text) 10%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .review-card {
+    transition: none;
+  }
+}
+
+.review-rating {
+  display: flex;
+  gap: .25rem;
+}
+
+.review-rating label {
+  color: var(--border);
+  cursor: pointer;
+  font-size: 1.75rem;
+  line-height: 1;
+}
+
+.review-rating label:has(input:checked),
+.review-rating label:has(input:focus-visible),
+.review-rating label:hover {
+  color: var(--brand);
+}
+
+.review-rating input {
+  position: absolute;
+  opacity: 0;
+}
+
 .brand-button {
   background: var(--brand);
   color: #fff;

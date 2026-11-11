@@ -3,6 +3,7 @@ import { updateCartCount } from "../modules/cart.js";
 import { loadJson } from "../modules/data.js";
 import { calculateDrink } from "../modules/pricing.js";
 import { formatPrice } from "../modules/format.js";
+import { setupReviews } from "../modules/reviews.js";
 
 initializeTheme();
 updateCartCount();
@@ -84,19 +85,7 @@ try {
     card.append(title, price, link);
     recipesList.append(card);
   });
-  const reviewsList = document.querySelector("[data-reviews-list]");
-  site.reviews.forEach((review) => {
-    const slide = document.createElement("article");
-    slide.className = "swiper-slide surface rounded-2xl p-6";
-    const initials = document.createElement("strong");
-    initials.className = "text-xl text-coffee";
-    initials.textContent = review.initials;
-    const text = document.createElement("p");
-    text.className = "muted mt-4";
-    text.textContent = review.text;
-    slide.append(initials, text);
-    reviewsList.append(slide);
-  });
+  setupReviews(site.reviews);
   const gallery = document.querySelector("[data-home-gallery]");
   site.gallery.forEach((item, index) => {
     const link = document.createElement("a");
@@ -115,7 +104,6 @@ try {
   });
   if (typeof Swiper !== "undefined" && featuredList) {
     new Swiper("[data-featured-slider]", { slidesPerView: 1, spaceBetween: 16, pagination: { el: ".swiper-pagination", clickable: true }, breakpoints: { 640: { slidesPerView: 2 }, 1024: { slidesPerView: 3 } } });
-    new Swiper("[data-reviews-slider]", { slidesPerView: 1, spaceBetween: 16, pagination: { el: "[data-reviews-slider] .swiper-pagination", clickable: true }, autoplay: false });
     if (typeof Fancybox !== "undefined") Fancybox.bind("[data-fancybox='home-gallery']");
   } else {
     console.warn("Swiper недоступний; слайдер показано без інтерактивності.");

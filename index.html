@@ -92,8 +92,53 @@
     </section>
     <section class="section-alt" aria-labelledby="reviews-title">
       <div class="mx-auto max-w-6xl px-4 py-16">
-        <h2 id="reviews-title" class="mb-6 text-2xl font-extrabold">Відгуки</h2>
-        <div class="swiper" data-reviews-slider><div class="swiper-wrapper" data-reviews-list></div><div class="swiper-pagination"></div></div>
+        <div class="flex flex-col justify-between gap-5 md:flex-row md:items-end">
+          <div>
+            <p class="mb-2 text-sm font-bold uppercase tracking-widest text-coffee">Досвід КаваLab</p>
+            <h2 id="reviews-title" class="text-2xl font-extrabold">Відгуки клієнтів</h2>
+            <p class="muted mt-2 max-w-2xl">Демонстраційні відгуки показують формат розділу. Ваш відгук збережеться лише в цьому браузері.</p>
+          </div>
+          <div class="surface rounded-2xl px-5 py-4 text-center" aria-label="Середня оцінка та кількість відгуків">
+            <p class="text-3xl font-extrabold text-coffee" data-reviews-average>—</p>
+            <p class="text-sm" data-reviews-count>0 відгуків</p>
+            <p class="review-stars mt-1" aria-hidden="true">★★★★★</p>
+          </div>
+        </div>
+        <div class="mt-8 swiper" data-reviews-slider>
+          <div class="swiper-wrapper" data-reviews-list></div>
+          <div class="swiper-pagination"></div>
+        </div>
+        <form class="surface mt-10 rounded-2xl p-6" data-review-form novalidate>
+          <h3 class="text-xl font-bold">Залишити відгук</h3>
+          <p class="muted mt-2 text-sm">Це демо-форма: дані не надсилаються на сервер.</p>
+          <div class="mt-5 grid gap-5 md:grid-cols-2">
+            <div>
+              <label class="font-bold" for="review-name">Ім'я</label>
+              <input class="mt-2 min-h-12 w-full rounded-xl border bg-transparent px-4" data-border-themed id="review-name" name="name" maxlength="50" autocomplete="name" aria-describedby="review-name-error" required>
+              <p class="mt-2 text-sm text-red-700 dark:text-red-300" id="review-name-error" data-review-error="name"></p>
+            </div>
+            <fieldset>
+              <legend class="font-bold">Оцінка</legend>
+              <div class="review-rating mt-2" role="radiogroup" aria-label="Оцінка від 1 до 5 зірок">
+                <label><input name="rating" type="radio" value="1"><span aria-hidden="true">★</span><span class="sr-only">1 зірка</span></label>
+                <label><input name="rating" type="radio" value="2"><span aria-hidden="true">★</span><span class="sr-only">2 зірки</span></label>
+                <label><input name="rating" type="radio" value="3"><span aria-hidden="true">★</span><span class="sr-only">3 зірки</span></label>
+                <label><input name="rating" type="radio" value="4"><span aria-hidden="true">★</span><span class="sr-only">4 зірки</span></label>
+                <label><input name="rating" type="radio" value="5"><span aria-hidden="true">★</span><span class="sr-only">5 зірок</span></label>
+              </div>
+              <p class="mt-2 text-sm text-red-700 dark:text-red-300" id="review-rating-error" data-review-error="rating"></p>
+            </fieldset>
+          </div>
+          <div class="mt-5">
+            <label class="font-bold" for="review-text">Ваш відгук</label>
+            <textarea class="mt-2 min-h-32 w-full rounded-xl border bg-transparent px-4 py-3" data-border-themed id="review-text" name="text" maxlength="500" minlength="10" aria-describedby="review-text-error" required></textarea>
+            <p class="mt-2 text-sm text-red-700 dark:text-red-300" id="review-text-error" data-review-error="text"></p>
+          </div>
+          <div class="mt-5 flex flex-wrap items-center gap-4">
+            <button class="brand-button rounded-xl px-5 py-3 font-bold" type="submit">Опублікувати відгук</button>
+            <p class="text-sm" aria-live="polite" data-review-status></p>
+          </div>
+        </form>
       </div>
     </section>
     <section class="mx-auto max-w-6xl px-4 py-16" aria-labelledby="home-gallery-title">

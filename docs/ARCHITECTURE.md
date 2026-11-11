@@ -21,3 +21,8 @@ JSON у `data/` завантажується через `js/modules/data.js`. Н
 - `kavalab:reservations:v1`
 - `kavalab:legacy-reservations-dismissed:v1`
 - `kavalab:orders:v1`
+- `kavalab:reviews:v1` — відгуки, додані через демо-форму; зберігаються лише в браузері користувача.
+
+## Відгуки
+
+Демо-відгуки надходять із `data/site.json`, а `js/modules/reviews.js` об'єднує їх із локальними записами, показує середній рейтинг і кількість, валідовує форму та додає нові картки до Swiper. Серверної публікації немає; при недоступному `localStorage` використовується стандартний fallback сховища проєкту.
