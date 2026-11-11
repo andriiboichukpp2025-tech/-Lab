@@ -128,6 +128,14 @@ body {
   color: var(--brand);
 }
 
+.brand-name {
+  color: var(--text);
+}
+
+.brand-name .text-coffee {
+  color: var(--brand);
+}
+
 .brand-button {
   background: var(--brand);
   color: #fff;
