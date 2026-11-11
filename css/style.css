@@ -69,6 +69,40 @@ body {
   background: color-mix(in srgb, var(--surface) 72%, var(--page-bg));
 }
 
+.home-section {
+  padding-block: 4rem;
+}
+
+.home-container {
+  width: min(100% - 2rem, 72rem);
+  margin-inline: auto;
+}
+
+.home-grid {
+  display: grid;
+  min-width: 0;
+  gap: 1rem;
+}
+
+.home-grid > * {
+  min-width: 0;
+}
+
+.home-grid-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.home-grid-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+@media (max-width: 767px) {
+  .home-grid-2,
+  .home-grid-3 {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 .step-number {
   display: inline-grid;
   min-width: 2rem;
