@@ -30,8 +30,8 @@ function render() {
     const image = document.createElement("img");
     image.src = item.image || "assets/images/placeholder.svg";
     image.alt = item.alt;
-    image.width = 800;
-    image.height = 600;
+    image.width = item.width || 800;
+    image.height = item.height || 600;
     image.loading = "lazy";
     image.className = "aspect-[4/3] w-full object-cover";
     const content = document.createElement("div");
