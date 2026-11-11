@@ -114,6 +114,58 @@ body {
   stroke-width: 6;
 }
 
+.map-floor {
+  fill: var(--surface);
+  stroke: var(--border);
+  stroke-width: 4;
+}
+
+.fixed-furniture {
+  fill: color-mix(in srgb, var(--border) 65%, var(--surface));
+  stroke: var(--border);
+  stroke-width: 2;
+}
+
+.map-label {
+  fill: var(--muted);
+  font-size: 18px;
+  font-weight: 700;
+  text-anchor: middle;
+}
+
+.map-window {
+  fill: #9ed5e5;
+  stroke: var(--text);
+  stroke-width: 2;
+}
+
+.map-door {
+  fill: none;
+  stroke: var(--brand);
+  stroke-width: 5;
+}
+
+.map-plant {
+  fill: #4f8a5c;
+  stroke: var(--text);
+  stroke-width: 2;
+}
+
+.chair-shape {
+  fill: #b87952;
+  stroke: var(--text);
+  stroke-width: 2;
+}
+
+.table-capacity .table-shape {
+  fill: url("#busy-pattern");
+  opacity: .7;
+}
+
+.table-capacity::after {
+  content: "⊘";
+}
+
 .map-bar {
   fill: var(--border);
 }
@@ -122,6 +174,11 @@ body {
   fill: #2f6b45;
   stroke: var(--text);
   stroke-width: 3;
+}
+
+.table-hit {
+  fill: transparent;
+  pointer-events: all;
 }
 
 .table-busy .table-shape {
@@ -138,7 +195,7 @@ body {
   cursor: not-allowed;
 }
 
-.table-shape + text {
+.table-shape ~ text {
   fill: #fff;
   font-size: 15px;
   font-weight: 800;

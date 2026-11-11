@@ -5,6 +5,7 @@ import { normalizePhone, validateField } from "../modules/validation.js";
 import { readStorage, writeStorage } from "../modules/storage.js";
 import { isBusy, makeReservationCode, validateReservation } from "../modules/reservation-logic.js";
 import { formatPrice } from "../modules/format.js";
+import { buildChairs } from "../modules/floor-plan.js";
 
 initializeTheme();
 updateCartCount();
@@ -13,7 +14,8 @@ const RESERVATIONS_KEY = "kavalab:reservations:v1";
 const form = document.querySelector("[data-reservation-form]");
 const steps = [...document.querySelectorAll("[data-step]")];
 const statusElements = document.querySelectorAll("[data-reservation-status]");
-const state = { step: 1, tableId: null, tables: [], menu: [], preorder: [], reservations: readStorage(RESERVATIONS_KEY, []) };
+const storedReservations = readStorage(RESERVATIONS_KEY, []);
+const state = { step: 1, tableId: null, tables: [], layout: { fixed: [] }, menu: [], preorder: [], zone: "Усі", zoom: 1, reservations: Array.isArray(storedReservations) ? storedReservations : [], legacyReservations: [] };
 const today = new Date();
 const dateInput = document.querySelector("[data-date]");
 dateInput.min = today.toISOString().slice(0, 10);
@@ -95,18 +97,18 @@ function tableElement(table) {
   const group = document.createElementNS("http://www.w3.org/2000/svg", "g");
   group.setAttribute("role", "button");
   group.setAttribute("tabindex", "0");
-  group.setAttribute("aria-label", `Столик ${table.id}, ${table.capacity} місця, ${table.zone}`);
+  group.setAttribute("aria-label", `Столик ${table.id}, ${table.seats} місця, ${table.zone}`);
   group.dataset.tableId = table.id;
   const shape = document.createElementNS("http://www.w3.org/2000/svg", table.shape === "circle" ? "circle" : "rect");
   if (table.shape === "circle") {
     shape.setAttribute("cx", table.x);
     shape.setAttribute("cy", table.y);
-    shape.setAttribute("r", table.radius);
+    shape.setAttribute("r", table.size.diameter / 2);
   } else {
-    shape.setAttribute("x", table.x - table.width / 2);
-    shape.setAttribute("y", table.y - table.height / 2);
-    shape.setAttribute("width", table.width);
-    shape.setAttribute("height", table.height);
+    shape.setAttribute("x", table.x - table.size.width / 2);
+    shape.setAttribute("y", table.y - table.size.height / 2);
+    shape.setAttribute("width", table.size.width);
+    shape.setAttribute("height", table.size.height);
     shape.setAttribute("rx", "12");
   }
   shape.classList.add("table-shape");
@@ -115,10 +117,18 @@ function tableElement(table) {
   label.setAttribute("y", table.y + 5);
   label.setAttribute("text-anchor", "middle");
   label.textContent = table.id;
-  group.append(shape, label);
+  const hit = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+  hit.setAttribute("x", table.x - 30);
+  hit.setAttribute("y", table.y - 30);
+  hit.setAttribute("width", "60");
+  hit.setAttribute("height", "60");
+  hit.classList.add("table-hit");
+  group.append(hit, shape, label);
   const update = () => {
     const guests = Number(document.querySelector("[data-guests]").value);
-    const busy = table.capacity < guests || isBusy({ tableId: table.id, date: dateInput.value, time: document.querySelector("[data-time]").value, duration: Number(document.querySelector("[data-duration]").value), reservations: state.reservations });
+    const capacityBlocked = table.seats < guests;
+    const busy = capacityBlocked || isBusy({ tableId: table.id, date: dateInput.value, time: document.querySelector("[data-time]").value, duration: Number(document.querySelector("[data-duration]").value), reservations: state.reservations });
+    group.classList.toggle("table-capacity", capacityBlocked);
     group.classList.toggle("table-busy", busy);
     group.classList.toggle("table-selected", table.id === state.tableId);
     group.setAttribute("aria-disabled", String(busy));
@@ -139,6 +149,8 @@ function tableElement(table) {
 function renderMap() {
   const svg = document.querySelector("[data-floor-plan]");
   svg.replaceChildren();
+  svg.style.transform = `scale(${state.zoom})`;
+  svg.style.transformOrigin = "top left";
   const defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
   const pattern = document.createElementNS("http://www.w3.org/2000/svg", "pattern");
   pattern.id = "busy-pattern";
@@ -152,14 +164,84 @@ function renderMap() {
   pattern.append(stripe);
   defs.append(pattern);
   svg.append(defs);
-  const wall = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-  wall.setAttribute("x", "10"); wall.setAttribute("y", "10"); wall.setAttribute("width", "780"); wall.setAttribute("height", "500"); wall.setAttribute("rx", "12"); wall.classList.add("map-wall");
-  const bar = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-  bar.setAttribute("x", "440"); bar.setAttribute("y", "30"); bar.setAttribute("width", "340"); bar.setAttribute("height", "50"); bar.classList.add("map-bar");
-  svg.append(wall, bar);
-  state.tables.forEach((table) => svg.append(tableElement(table)));
+  const floor = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+  floor.setAttribute("x", "20"); floor.setAttribute("y", "20"); floor.setAttribute("width", "1160"); floor.setAttribute("height", "760"); floor.classList.add("map-floor");
+  svg.append(floor);
+  state.layout.fixed.forEach((item) => {
+    const fixed = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+    fixed.setAttribute("x", item.x); fixed.setAttribute("y", item.y); fixed.setAttribute("width", item.width); fixed.setAttribute("height", item.height); fixed.classList.add("fixed-furniture");
+    svg.append(fixed);
+  });
+  const labels = [
+    ["Санвузол", 120, 120], ["Кухня", 380, 120], ["Бариста", 870, 75], ["Каса", 870, 165],
+    ["Вхід", 680, 770], ["Вікна", 40, 440], ["Лаунж", 1080, 280]
+  ];
+  labels.forEach(([textValue, x, y]) => {
+    const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    label.setAttribute("x", x); label.setAttribute("y", y); label.classList.add("map-label"); label.textContent = textValue; svg.append(label);
+  });
+  const windows = [
+    { x: 20, y: 260, width: 8, height: 360 },
+    { x: 100, y: 772, width: 460, height: 8 }
+  ];
+  windows.forEach((windowRect) => {
+    const windowElement = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+    windowElement.setAttribute("x", windowRect.x); windowElement.setAttribute("y", windowRect.y); windowElement.setAttribute("width", windowRect.width); windowElement.setAttribute("height", windowRect.height); windowElement.classList.add("map-window");
+    svg.append(windowElement);
+  });
+  const door = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  door.setAttribute("d", "M620 780 A120 120 0 0 1 740 660");
+  door.classList.add("map-door");
+  svg.append(door);
+  [{ x: 560, y: 690 }, { x: 1140, y: 620 }, { x: 800, y: 430 }].forEach((plant) => {
+    const plantElement = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    plantElement.setAttribute("cx", plant.x); plantElement.setAttribute("cy", plant.y); plantElement.setAttribute("r", "18"); plantElement.classList.add("map-plant");
+    svg.append(plantElement);
+  });
+  state.tables.filter((table) => state.zone === "Усі" || table.zone === state.zone).forEach((table) => {
+    const group = tableElement(table);
+    buildChairs(table).forEach((chair) => {
+      const chairElement = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+      chairElement.setAttribute("x", chair.x - chair.width / 2);
+      chairElement.setAttribute("y", chair.y - chair.height / 2);
+      chairElement.setAttribute("width", chair.width);
+      chairElement.setAttribute("height", chair.height);
+      chairElement.setAttribute("rx", "10");
+      chairElement.classList.add("chair-shape", `chair-${chair.side}`);
+      group.append(chairElement);
+    });
+    svg.append(group);
+  });
   const selected = state.tables.find((table) => table.id === state.tableId);
-  document.querySelector("[data-table-details]").textContent = selected ? `${selected.id}: ${selected.zone}, ${selected.capacity} місця. ${selected.features.join(", ") || "звичайне місце"}.` : "Оберіть вільний столик.";
+  document.querySelector("[data-table-details]").textContent = selected ? `${selected.id}: ${selected.zone}, ${selected.seats} місця. ${selected.features.join(", ") || "звичайне місце"}.` : "Оберіть вільний столик.";
+  renderTableList();
+}
+
+function renderTableList() {
+  const target = document.querySelector("[data-table-list]");
+  target.replaceChildren();
+  state.tables.filter((table) => state.zone === "Усі" || table.zone === state.zone).forEach((table) => {
+    const button = document.createElement("button");
+    button.className = "surface rounded-xl p-4 text-left";
+    button.type = "button";
+    button.textContent = `${table.id} · ${table.zone} · ${table.seats} місця`;
+    button.addEventListener("click", () => { state.tableId = table.id; renderMap(); });
+    target.append(button);
+  });
+}
+
+function renderZoneFilters() {
+  const target = document.querySelector("[data-zone-filters]");
+  target.replaceChildren();
+  ["Усі", "Бар", "Вікно", "Зал", "Лаунж", "Великий стіл"].forEach((zone) => {
+    const button = document.createElement("button");
+    button.className = "min-h-11 rounded-xl border px-3";
+    button.type = "button";
+    button.textContent = zone;
+    button.setAttribute("aria-pressed", String(state.zone === zone));
+    button.addEventListener("click", () => { state.zone = zone; renderZoneFilters(); renderMap(); });
+    target.append(button);
+  });
 }
 
 function showStep(step) {
@@ -223,18 +305,21 @@ function renderReservationSummary() {
 function renderReservations() {
   const target = document.querySelector("[data-my-reservations]");
   target.replaceChildren();
-  state.reservations.forEach((reservation) => {
+  [...state.legacyReservations.map((reservation) => ({ ...reservation, legacy: true, original: reservation })), ...state.reservations].forEach((reservation) => {
     const card = document.createElement("article");
     card.className = "surface flex flex-wrap items-center justify-between gap-3 rounded-xl p-4";
     const text = document.createElement("p");
-    text.textContent = `${reservation.code}: ${reservation.date}, ${reservation.time}, столик ${reservation.tableId}`;
+    text.textContent = reservation.legacy
+      ? `${reservation.code || "Старе бронювання"}: Застаріле бронювання — столик ${reservation.tableId || "невідомий"}`
+      : `${reservation.code}: ${reservation.date}, ${reservation.time}, столик ${reservation.tableId}`;
     const button = document.createElement("button");
     button.className = "min-h-12 rounded-xl border px-4 font-bold";
     button.style.borderColor = "var(--border)";
     button.type = "button";
     button.textContent = "Скасувати";
     button.addEventListener("click", () => {
-      state.reservations = state.reservations.filter((item) => item.code !== reservation.code);
+      if (reservation.legacy) state.legacyReservations = state.legacyReservations.filter((item) => item !== reservation.original);
+      else state.reservations = state.reservations.filter((item) => item.code !== reservation.code);
       writeStorage(RESERVATIONS_KEY, state.reservations);
       renderReservations();
     });
@@ -244,6 +329,17 @@ function renderReservations() {
 }
 
 renderTimes();
+document.querySelectorAll("[data-view]").forEach((button) => button.addEventListener("click", () => {
+  const listMode = button.dataset.view === "list";
+  document.querySelector("[data-map-view]").classList.toggle("hidden", listMode);
+  document.querySelector("[data-table-list]").classList.toggle("hidden", !listMode);
+  document.querySelectorAll("[data-view]").forEach((item) => item.setAttribute("aria-pressed", String(item === button)));
+}));
+document.querySelectorAll("[data-map-zoom]").forEach((button) => button.addEventListener("click", () => {
+  const action = button.dataset.mapZoom;
+  state.zoom = action === "reset" ? 1 : Math.min(1.6, Math.max(0.8, state.zoom + (action === "in" ? 0.2 : -0.2)));
+  renderMap();
+}));
 document.querySelectorAll("[data-next]").forEach((button) => button.addEventListener("click", () => {
   const input = { date: dateInput.value, time: document.querySelector("[data-time]").value, duration: document.querySelector("[data-duration]").value, guests: Number(document.querySelector("[data-guests]").value) };
   const errors = validateReservation(input);
@@ -291,8 +387,14 @@ form.addEventListener("submit", (event) => {
 
 try {
   const [data, menu] = await Promise.all([loadJson("../../data/tables.json"), loadJson("../../data/menu.json")]);
+  state.layout = data.layout;
   state.tables = data.tables;
   state.menu = menu.items;
+  const validIds = new Set(state.tables.map((table) => table.id));
+  state.legacyReservations = state.reservations.filter((reservation) => !validIds.has(reservation.tableId));
+  state.reservations = state.reservations.filter((reservation) => validIds.has(reservation.tableId));
+  if (state.legacyReservations.length) setStatus("Є застарілі бронювання. Їх можна видалити нижче.");
+  renderZoneFilters();
   renderMap();
   renderReservations();
 } catch (error) {
