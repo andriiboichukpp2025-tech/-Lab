@@ -129,11 +129,11 @@ body {
 }
 
 .brand-name {
-  color: var(--text);
+  color: #8a4b2a;
 }
 
 .brand-name .text-coffee {
-  color: var(--brand);
+  color: #8a4b2a;
 }
 
 .brand-button {
