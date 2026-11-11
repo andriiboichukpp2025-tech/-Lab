@@ -5,7 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>КаваLab — кав'ярня-конструктор</title>
   <meta name="description" content="КаваLab — демонстраційний сайт кав'ярні з меню, конструктором напоїв і бронюванням столика.">
-  <link rel="canonical" href="https://kavalab.vercel.app/">
+  <link rel="canonical" href="https://kava-lab-boichuk.vercel.app/">
+  <meta property="og:title" content="КаваLab — кав'ярня-конструктор">
+  <meta property="og:description" content="Демонстраційний сайт кав'ярні з конструктором напоїв, меню та бронюванням.">
+  <meta property="og:image" content="https://kava-lab-boichuk.vercel.app/assets/images/placeholder.svg">
+  <meta property="og:url" content="https://kava-lab-boichuk.vercel.app/">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="uk_UA">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://kava-lab-boichuk.vercel.app/assets/images/placeholder.svg">
   <link rel="icon" href="assets/icons/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
@@ -15,6 +23,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <script>tailwind.config = { darkMode: "class", theme: { extend: { colors: { coffee: "#8A4B2A" } } } };</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"CafeOrCoffeeShop","name":"КаваLab","url":"https://kava-lab-boichuk.vercel.app/","image":"https://kava-lab-boichuk.vercel.app/assets/images/placeholder.svg","description":"Демонстраційний сайт кав'ярні КаваLab."}</script>
 </head>
 <body>
   <a class="skip-link" href="#main-content">Перейти до змісту</a>
@@ -39,12 +48,23 @@
         <p class="mb-4 font-bold uppercase tracking-widest text-coffee">Кавова лабораторія</p>
         <h1 class="text-4xl font-extrabold leading-tight md:text-6xl">Створи напій, який пасує саме тобі</h1>
         <p class="muted mt-6 max-w-xl text-lg">Демонстраційний MVP кав'ярні «КаваLab»: обирай основу, молоко, сиропи та додатки.</p>
+        <p class="muted mt-4 text-sm" data-builder-stats>Завантажуємо можливості конструктора…</p>
         <div class="mt-8 flex flex-wrap gap-3">
           <a class="brand-button rounded-xl px-5 py-4 font-bold" href="builder.html">Створити свій напій</a>
           <a class="rounded-xl border px-5 py-4 font-bold" style="border-color:var(--border)" href="reservation.html">Забронювати столик</a>
         </div>
       </div>
       <img class="w-full rounded-3xl" src="assets/images/placeholder.svg" alt="Демонстраційна чашка кави КаваLab" width="800" height="600" fetchpriority="high">
+    </section>
+    <section class="section-alt" aria-labelledby="how-title">
+      <div class="mx-auto max-w-6xl px-4 py-16">
+        <h2 id="how-title" class="mb-6 text-2xl font-extrabold">Як це працює</h2>
+        <div class="grid gap-4 md:grid-cols-3">
+          <article class="surface rounded-2xl p-6"><span class="step-number">1</span><h3 class="mt-4 font-bold">Обери основу</h3><p class="muted mt-2">Почни з напою та об'єму з актуальних даних конструктора.</p></article>
+          <article class="surface rounded-2xl p-6"><span class="step-number">2</span><h3 class="mt-4 font-bold">Налаштуй смак</h3><p class="muted mt-2">Додай молоко, сиропи й додатки в межах доступних опцій.</p></article>
+          <article class="surface rounded-2xl p-6"><span class="step-number">3</span><h3 class="mt-4 font-bold">Збережи рецепт</h3><p class="muted mt-2">Додай напій у кошик або поділися посиланням на рецепт.</p></article>
+        </div>
+      </div>
     </section>
     <section class="mx-auto max-w-6xl px-4 pb-20" aria-labelledby="benefits-title">
       <h2 id="benefits-title" class="mb-6 text-2xl font-extrabold">Чому КаваLab</h2>
@@ -58,9 +78,32 @@
       <h2 id="featured-title" class="mb-6 text-2xl font-extrabold">Хіти меню</h2>
       <div class="swiper" data-featured-slider><div class="swiper-wrapper" data-featured-list></div><div class="swiper-pagination"></div></div>
     </section>
+    <section class="section-alt" aria-labelledby="recipes-title">
+      <div class="mx-auto max-w-6xl px-4 py-16">
+        <h2 id="recipes-title" class="mb-6 text-2xl font-extrabold">Спробуй готові рецепти</h2>
+        <div class="grid gap-4 md:grid-cols-3" data-recipes-list></div>
+      </div>
+    </section>
     <section class="mx-auto max-w-6xl px-4 pb-20" aria-labelledby="offers-title">
       <h2 id="offers-title" class="mb-6 text-2xl font-extrabold">Пропозиції</h2>
       <div class="grid gap-4 md:grid-cols-2" data-offers-list></div>
+    </section>
+    <section class="section-alt" aria-labelledby="reviews-title">
+      <div class="mx-auto max-w-6xl px-4 py-16">
+        <h2 id="reviews-title" class="mb-6 text-2xl font-extrabold">Відгуки</h2>
+        <div class="swiper" data-reviews-slider><div class="swiper-wrapper" data-reviews-list></div><div class="swiper-pagination"></div></div>
+      </div>
+    </section>
+    <section class="mx-auto max-w-6xl px-4 py-16" aria-labelledby="home-gallery-title">
+      <h2 id="home-gallery-title" class="mb-6 text-2xl font-extrabold">Галерея</h2>
+      <div class="grid grid-cols-2 gap-4 md:grid-cols-3" data-home-gallery></div>
+    </section>
+    <section class="section-alt" aria-labelledby="booking-cta-title">
+      <div class="mx-auto max-w-6xl px-4 py-16 text-center">
+        <h2 id="booking-cta-title" class="text-3xl font-extrabold">Знайди своє місце</h2>
+        <p class="muted mx-auto mt-3 max-w-xl">Обери час, столик і за бажанням підготуй замовлення наперед.</p>
+        <a class="brand-button mt-6 inline-block rounded-xl px-5 py-4 font-bold" href="reservation.html">Забронювати столик</a>
+      </div>
     </section>
   </main>
   <footer class="border-t" style="border-color:var(--border)"><div class="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-8 text-sm md:flex-row md:justify-between"><p>© КаваLab · Демо-проєкт</p><p class="muted">08:00–22:00 · +380 32 000 00 00 · hello@kavalab.example</p></div></footer>

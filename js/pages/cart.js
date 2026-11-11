@@ -87,10 +87,11 @@ document.querySelector("[data-checkout-form]").addEventListener("submit", (event
   const name = document.querySelector("[data-checkout-name]").value;
   const email = document.querySelector("[data-checkout-email]").value;
   const phone = normalizePhone(document.querySelector("[data-checkout-phone]").value);
+  const pickupTime = document.querySelector("[data-pickup-time]").value;
   const checkoutStatus = document.querySelector("[data-checkout-status]");
-  if (!validateField("name", name) || !validateField("email", email) || !validateField("phone", phone)) { checkoutStatus.textContent = "Перевірте ім'я, телефон і email."; return; }
+  if (!validateField("name", name) || !validateField("email", email) || !validateField("phone", phone) || !pickupTime) { checkoutStatus.textContent = "Перевірте ім'я, телефон, email і час отримання."; return; }
   const orders = readStorage("kavalab:orders:v1", []);
-  orders.push({ id: `order-${Date.now()}`, items, name, email, phone, totalCents: totalCents() });
+  orders.push({ id: `order-${Date.now()}`, items, name, email, phone, pickupTime, totalCents: totalCents() });
   writeStorage("kavalab:orders:v1", orders);
   items = []; saveCart(items); updateCartCount(); render();
   checkoutStatus.textContent = "Демо-замовлення збережено у цьому браузері.";
@@ -102,5 +103,11 @@ try {
 } catch (error) {
   console.error(error);
   status.textContent = "Не вдалося завантажити промокоди.";
+  const retry = document.createElement("button");
+  retry.className = "brand-button ml-3 rounded-xl px-4 py-3 font-bold";
+  retry.type = "button";
+  retry.textContent = "Спробувати ще";
+  retry.addEventListener("click", () => window.location.reload());
+  status.append(retry);
 }
 render();

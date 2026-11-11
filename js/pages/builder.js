@@ -142,4 +142,10 @@ try {
 } catch (error) {
   console.error(error);
   status.textContent = "Не вдалося завантажити конструктор.";
+  const retry = document.createElement("button");
+  retry.className = "brand-button ml-3 rounded-xl px-4 py-3 font-bold";
+  retry.type = "button";
+  retry.textContent = "Спробувати ще";
+  retry.addEventListener("click", () => window.location.reload());
+  status.append(retry);
 }

@@ -4,6 +4,7 @@ import { loadJson } from "../modules/data.js";
 import { normalizePhone, validateField } from "../modules/validation.js";
 import { readStorage, writeStorage } from "../modules/storage.js";
 import { isBusy, makeReservationCode, validateReservation } from "../modules/reservation-logic.js";
+import { formatPrice } from "../modules/format.js";
 
 initializeTheme();
 updateCartCount();
@@ -12,7 +13,7 @@ const RESERVATIONS_KEY = "kavalab:reservations:v1";
 const form = document.querySelector("[data-reservation-form]");
 const steps = [...document.querySelectorAll("[data-step]")];
 const statusElements = document.querySelectorAll("[data-reservation-status]");
-const state = { step: 1, tableId: null, tables: [], reservations: readStorage(RESERVATIONS_KEY, []) };
+const state = { step: 1, tableId: null, tables: [], menu: [], preorder: [], reservations: readStorage(RESERVATIONS_KEY, []) };
 const today = new Date();
 const dateInput = document.querySelector("[data-date]");
 dateInput.min = today.toISOString().slice(0, 10);
@@ -166,6 +167,57 @@ function showStep(step) {
   steps.forEach((section) => section.classList.toggle("hidden", Number(section.dataset.step) !== step));
   document.querySelector(`[data-step-indicator="${step}"]`)?.focus();
   if (step === 2) renderMap();
+  if (step === 3) renderPreorder();
+  if (step === 5) renderReservationSummary();
+}
+
+function renderPreorder() {
+  const menuTarget = document.querySelector("[data-preorder-menu]");
+  const cartTarget = document.querySelector("[data-preorder-cart]");
+  menuTarget.replaceChildren();
+  cartTarget.replaceChildren();
+  state.menu.filter((item) => item.category !== "coffee" || item.builderBase === null).forEach((item) => {
+    const button = document.createElement("button");
+    button.className = "surface min-h-12 rounded-xl p-4 text-left";
+    button.type = "button";
+    button.textContent = `${item.name} · ${item.price ?? "від 45"} ₴`;
+    button.addEventListener("click", () => {
+      const existing = state.preorder.find((entry) => entry.id === item.id);
+      if (existing) existing.quantity = Math.min(20, existing.quantity + 1);
+      else if (item.price !== null) state.preorder.push({ id: item.id, name: item.name, unitCents: item.price * 100, quantity: 1 });
+      renderPreorder();
+    });
+    menuTarget.append(button);
+  });
+  state.preorder.forEach((item, index) => {
+    const row = document.createElement("div");
+    row.className = "flex items-center justify-between gap-2 text-sm";
+    const label = document.createElement("span");
+    label.textContent = `${item.name} × ${item.quantity}`;
+    const controls = document.createElement("div");
+    controls.className = "flex gap-1";
+    const minus = document.createElement("button");
+    minus.className = "min-h-11 min-w-11 rounded-lg border";
+    minus.type = "button";
+    minus.textContent = "−";
+    minus.addEventListener("click", () => { item.quantity -= 1; if (item.quantity < 1) state.preorder.splice(index, 1); renderPreorder(); });
+    const plus = document.createElement("button");
+    plus.className = "min-h-11 min-w-11 rounded-lg border";
+    plus.type = "button";
+    plus.textContent = "+";
+    plus.addEventListener("click", () => { item.quantity = Math.min(20, item.quantity + 1); renderPreorder(); });
+    controls.append(minus, plus);
+    row.append(label, controls);
+    cartTarget.append(row);
+  });
+  const total = state.preorder.reduce((sum, item) => sum + item.unitCents * item.quantity, 0);
+  document.querySelector("[data-preorder-total]").textContent = `Разом: ${formatPrice(total)}`;
+}
+
+function renderReservationSummary() {
+  const target = document.querySelector("[data-reservation-summary]");
+  const total = state.preorder.reduce((sum, item) => sum + item.unitCents * item.quantity, 0);
+  target.textContent = `${dateInput.value}, ${document.querySelector("[data-time]").value}; столик ${state.tableId}; ${document.querySelector("[data-guests]").value} гостей; передзамовлення: ${formatPrice(total)}.`;
 }
 
 function renderReservations() {
@@ -203,6 +255,16 @@ document.querySelectorAll("[data-next]").forEach((button) => button.addEventList
     renderMap();
     return;
   }
+  if (state.step === 4) {
+    const phone = normalizePhone(document.querySelector("[data-phone]").value);
+    if (!validateField("name", document.querySelector("[data-name]").value)
+      || !validateField("phone", phone)
+      || !validateField("email", document.querySelector("[data-email]").value)
+      || !document.querySelector("[data-consent]").checked) {
+      setStatus("Перевірте ім'я, телефон, email і згоду.");
+      return;
+    }
+  }
   setStatus("");
   showStep(state.step + 1);
 }));
@@ -214,11 +276,11 @@ form.addEventListener("submit", (event) => {
   const phone = normalizePhone(document.querySelector("[data-phone]").value);
   const email = document.querySelector("[data-email]").value;
   const reservationInput = { date: dateInput.value, time: document.querySelector("[data-time]").value, duration: document.querySelector("[data-duration]").value, guests: Number(document.querySelector("[data-guests]").value) };
-  if (validateReservation(reservationInput).length || !state.tableId || isBusy({ tableId: state.tableId, ...reservationInput, reservations: state.reservations }) || !validateField("name", name) || !validateField("phone", phone) || !validateField("email", email) || !document.querySelector("[data-consent]").checked) {
+  if (state.step !== 5 || validateReservation(reservationInput).length || !state.tableId || isBusy({ tableId: state.tableId, ...reservationInput, reservations: state.reservations }) || !validateField("name", name) || !validateField("phone", phone) || !validateField("email", email) || !document.querySelector("[data-consent]").checked) {
     setStatus("Перевірте ім'я, телефон, email і згоду.");
     return;
   }
-  const reservation = { code: makeReservationCode(state.reservations.map((item) => item.code)), tableId: state.tableId, date: dateInput.value, time: document.querySelector("[data-time]").value, duration: Number(document.querySelector("[data-duration]").value), guests: Number(document.querySelector("[data-guests]").value), name, phone, email };
+  const reservation = { code: makeReservationCode(state.reservations.map((item) => item.code)), tableId: state.tableId, date: dateInput.value, time: document.querySelector("[data-time]").value, duration: Number(document.querySelector("[data-duration]").value), guests: Number(document.querySelector("[data-guests]").value), name, phone, email, preorder: state.preorder };
   state.reservations.push(reservation);
   writeStorage(RESERVATIONS_KEY, state.reservations);
   renderReservations();
@@ -228,11 +290,18 @@ form.addEventListener("submit", (event) => {
 });
 
 try {
-  const data = await loadJson("../../data/tables.json");
+  const [data, menu] = await Promise.all([loadJson("../../data/tables.json"), loadJson("../../data/menu.json")]);
   state.tables = data.tables;
+  state.menu = menu.items;
   renderMap();
   renderReservations();
 } catch (error) {
   console.error(error);
   setStatus("Не вдалося завантажити карту залу.");
+  const retry = document.createElement("button");
+  retry.className = "brand-button ml-3 rounded-xl px-4 py-3 font-bold";
+  retry.type = "button";
+  retry.textContent = "Спробувати ще";
+  retry.addEventListener("click", () => window.location.reload());
+  document.querySelector("[data-reservation-status]")?.append(retry);
 }

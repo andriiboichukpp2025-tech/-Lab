@@ -57,6 +57,31 @@ body {
   border: 1px solid var(--border);
 }
 
+.border-themed {
+  border-color: var(--border);
+}
+
+.section-alt {
+  background: color-mix(in srgb, var(--surface) 72%, var(--page-bg));
+}
+
+.step-number {
+  display: inline-grid;
+  min-width: 2rem;
+  min-height: 2rem;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--brand);
+  color: #fff;
+  font-weight: 800;
+}
+
+.empty-state {
+  border: 1px dashed var(--border);
+  border-radius: 1rem;
+  padding: 1.5rem;
+}
+
 .muted {
   color: var(--muted);
 }
