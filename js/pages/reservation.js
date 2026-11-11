@@ -11,11 +11,13 @@ initializeTheme();
 updateCartCount();
 
 const RESERVATIONS_KEY = "kavalab:reservations:v1";
+const DISMISSED_LEGACY_KEY = "kavalab:legacy-reservations-dismissed:v1";
 const form = document.querySelector("[data-reservation-form]");
 const steps = [...document.querySelectorAll("[data-step]")];
 const statusElements = document.querySelectorAll("[data-reservation-status]");
 const storedReservations = readStorage(RESERVATIONS_KEY, []);
-const state = { step: 1, tableId: null, tables: [], layout: { fixed: [] }, menu: [], preorder: [], zone: "Усі", zoom: 1, reservations: Array.isArray(storedReservations) ? storedReservations : [], legacyReservations: [] };
+const dismissedLegacy = readStorage(DISMISSED_LEGACY_KEY, []);
+const state = { step: 1, tableId: null, tables: [], layout: { fixed: [] }, menu: [], preorder: [], zone: "Усі", zoom: 1, reservations: Array.isArray(storedReservations) ? storedReservations : [], legacyReservations: [], dismissedLegacy: Array.isArray(dismissedLegacy) ? dismissedLegacy : [] };
 const today = new Date();
 const dateInput = document.querySelector("[data-date]");
 dateInput.min = today.toISOString().slice(0, 10);
@@ -318,7 +320,12 @@ function renderReservations() {
     button.type = "button";
     button.textContent = "Скасувати";
     button.addEventListener("click", () => {
-      if (reservation.legacy) state.legacyReservations = state.legacyReservations.filter((item) => item !== reservation.original);
+      if (reservation.legacy) {
+        state.legacyReservations = state.legacyReservations.filter((item) => item !== reservation.original);
+        const legacyKey = reservation.original.code || `${reservation.original.tableId}|${reservation.original.date}|${reservation.original.time}`;
+        state.dismissedLegacy.push(legacyKey);
+        writeStorage(DISMISSED_LEGACY_KEY, state.dismissedLegacy);
+      }
       else state.reservations = state.reservations.filter((item) => item.code !== reservation.code);
       writeStorage(RESERVATIONS_KEY, state.reservations);
       renderReservations();
@@ -391,7 +398,11 @@ try {
   state.tables = data.tables;
   state.menu = menu.items;
   const validIds = new Set(state.tables.map((table) => table.id));
-  state.legacyReservations = state.reservations.filter((reservation) => !validIds.has(reservation.tableId));
+  state.legacyReservations = state.reservations.filter((reservation) => {
+    if (validIds.has(reservation.tableId)) return false;
+    const legacyKey = reservation.code || `${reservation.tableId}|${reservation.date}|${reservation.time}`;
+    return !state.dismissedLegacy.includes(legacyKey);
+  });
   state.reservations = state.reservations.filter((reservation) => validIds.has(reservation.tableId));
   if (state.legacyReservations.length) setStatus("Є застарілі бронювання. Їх можна видалити нижче.");
   renderZoneFilters();
