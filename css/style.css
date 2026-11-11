@@ -124,6 +124,10 @@ body {
   color: var(--muted);
 }
 
+.text-coffee {
+  color: var(--brand);
+}
+
 .brand-button {
   background: var(--brand);
   color: #fff;
