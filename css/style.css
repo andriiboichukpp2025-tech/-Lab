@@ -61,6 +61,10 @@ body {
   border-color: var(--border);
 }
 
+[data-border-themed] {
+  border-color: var(--border);
+}
+
 .section-alt {
   background: color-mix(in srgb, var(--surface) 72%, var(--page-bg));
 }
