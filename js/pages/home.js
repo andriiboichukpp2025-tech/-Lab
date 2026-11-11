@@ -86,25 +86,8 @@ try {
     recipesList.append(card);
   });
   setupReviews(site.reviews);
-  const gallery = document.querySelector("[data-home-gallery]");
-  site.gallery.forEach((item, index) => {
-    const link = document.createElement("a");
-    link.href = item.image || "assets/images/placeholder.svg";
-    link.dataset.fancybox = "home-gallery";
-    link.dataset.caption = item.title;
-    const image = document.createElement("img");
-    image.src = item.image || "assets/images/placeholder.svg";
-    image.alt = item.alt;
-    image.width = 800;
-    image.height = 600;
-    image.loading = index === 0 ? "eager" : "lazy";
-    image.className = "aspect-[4/3] w-full rounded-2xl object-cover";
-    link.append(image);
-    gallery.append(link);
-  });
   if (typeof Swiper !== "undefined" && featuredList) {
     new Swiper("[data-featured-slider]", { slidesPerView: 1, spaceBetween: 16, pagination: { el: ".swiper-pagination", clickable: true }, breakpoints: { 640: { slidesPerView: 2 }, 1024: { slidesPerView: 3 } } });
-    if (typeof Fancybox !== "undefined") Fancybox.bind("[data-fancybox='home-gallery']");
   } else {
     console.warn("Swiper недоступний; слайдер показано без інтерактивності.");
   }
