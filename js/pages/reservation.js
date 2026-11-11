@@ -119,18 +119,27 @@ function tableElement(table) {
   label.setAttribute("y", table.y + 5);
   label.setAttribute("text-anchor", "middle");
   label.textContent = table.id;
+  const capacityIcon = document.createElementNS("http://www.w3.org/2000/svg", "text");
+  capacityIcon.setAttribute("x", table.x + 20);
+  capacityIcon.setAttribute("y", table.y - 20);
+  capacityIcon.classList.add("capacity-icon");
+  capacityIcon.textContent = "⊘";
   const hit = document.createElementNS("http://www.w3.org/2000/svg", "rect");
   hit.setAttribute("x", table.x - 30);
   hit.setAttribute("y", table.y - 30);
   hit.setAttribute("width", "60");
   hit.setAttribute("height", "60");
   hit.classList.add("table-hit");
-  group.append(hit, shape, label);
+  group.append(hit, shape, label, capacityIcon);
   const update = () => {
     const guests = Number(document.querySelector("[data-guests]").value);
     const capacityBlocked = table.seats < guests;
     const busy = capacityBlocked || isBusy({ tableId: table.id, date: dateInput.value, time: document.querySelector("[data-time]").value, duration: Number(document.querySelector("[data-duration]").value), reservations: state.reservations });
     group.classList.toggle("table-capacity", capacityBlocked);
+    capacityIcon.classList.toggle("hidden", !capacityBlocked);
+    group.setAttribute("aria-label", capacityBlocked
+      ? `Столик ${table.id}, недоступний за місткістю: ${table.seats} місця, ${table.zone}`
+      : `Столик ${table.id}, ${table.seats} місця, ${table.zone}`);
     group.classList.toggle("table-busy", busy);
     group.classList.toggle("table-selected", table.id === state.tableId);
     group.setAttribute("aria-disabled", String(busy));
@@ -169,6 +178,15 @@ function renderMap() {
   const floor = document.createElementNS("http://www.w3.org/2000/svg", "rect");
   floor.setAttribute("x", "20"); floor.setAttribute("y", "20"); floor.setAttribute("width", "1160"); floor.setAttribute("height", "760"); floor.classList.add("map-floor");
   svg.append(floor);
+  state.layout.walls.forEach((wallData) => {
+    const wall = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+    wall.setAttribute("x", wallData.x);
+    wall.setAttribute("y", wallData.y);
+    wall.setAttribute("width", wallData.width);
+    wall.setAttribute("height", wallData.height);
+    wall.classList.add("map-wall");
+    svg.append(wall);
+  });
   state.layout.fixed.forEach((item) => {
     const fixed = document.createElementNS("http://www.w3.org/2000/svg", "rect");
     fixed.setAttribute("x", item.x); fixed.setAttribute("y", item.y); fixed.setAttribute("width", item.width); fixed.setAttribute("height", item.height); fixed.classList.add("fixed-furniture");

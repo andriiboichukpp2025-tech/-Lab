@@ -202,6 +202,17 @@ body {
   pointer-events: none;
 }
 
+.capacity-icon {
+  fill: var(--text);
+  font-size: 18px;
+  font-weight: 800;
+  pointer-events: none;
+}
+
+.capacity-icon.hidden {
+  display: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
