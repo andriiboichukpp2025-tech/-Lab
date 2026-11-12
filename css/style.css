@@ -78,6 +78,11 @@ body {
   margin-inline: auto;
 }
 
+.hero-video {
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+}
+
 .home-grid {
   display: grid;
   min-width: 0;
@@ -126,6 +131,16 @@ body {
 
 .text-coffee {
   color: var(--brand);
+}
+
+.swiper-pagination-bullet {
+  background-color: var(--brand) !important;
+  opacity: .35;
+}
+
+.swiper-pagination-bullet-active {
+  background-color: var(--brand) !important;
+  opacity: 1;
 }
 
 .brand-name {

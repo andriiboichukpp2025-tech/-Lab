@@ -1,16 +1,5 @@
-function hash(value) {
-  let result = 2166136261;
-  for (const char of value) {
-    result ^= char.charCodeAt(0);
-    result = Math.imul(result, 16777619);
-  }
-  return result >>> 0;
-}
-
-export function isSeededBusy(tableId, date, time) {
-  const hour = Number(time.slice(0, 2));
-  const threshold = hour >= 18 && hour < 21 ? 0.55 : 0.3;
-  return (hash(`${tableId}|${date}|${time}`) % 1000) / 1000 < threshold;
+export function isSeededBusy(tableId) {
+  return ["B2", "B5", "H3"].includes(tableId);
 }
 
 export function intervalsOverlap(startA, durationA, startB, durationB) {
