@@ -16,11 +16,13 @@
   <meta name="twitter:image" content="https://kava-lab-boichuk.vercel.app/assets/images/placeholder.svg">
   <link rel="icon" href="assets/icons/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+  <link rel="preload" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"></noscript>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap"></noscript>
+  <script defer src="https://cdn.tailwindcss.com/3.4.17"></script>
   <script>tailwind.config = { darkMode: "class", theme: { extend: { colors: { coffee: "#8A4B2A" } } } };</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"CafeOrCoffeeShop","name":"КаваLab","url":"https://kava-lab-boichuk.vercel.app/","image":"https://kava-lab-boichuk.vercel.app/assets/images/placeholder.svg","description":"Демонстраційний сайт кав'ярні КаваLab."}</script>
 </head>
@@ -53,7 +55,7 @@
           <a class="rounded-xl border px-5 py-4 font-bold" data-border-themed href="reservation.html">Забронювати столик</a>
         </div>
       </div>
-      <video class="hero-video w-full rounded-3xl" autoplay loop muted playsinline preload="auto" aria-label="Приготування кави КаваLab" width="800" height="600">
+      <video class="hero-video w-full rounded-3xl" autoplay loop muted playsinline preload="metadata" poster="assets/images/placeholder.svg" aria-label="Приготування кави КаваLab" width="800" height="600">
         <source src="assets/images/mixkit-serving-a-sparkling-cappuccino-in-a-cup-41859-hd-ready.mp4" type="video/mp4">
         Ваш браузер не підтримує відтворення відео.
       </video>
