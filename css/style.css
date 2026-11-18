@@ -65,6 +65,12 @@ body {
   border-color: var(--border);
 }
 
+[data-contact-form] [aria-invalid="true"] {
+  border-color: #dc2626 !important;
+  outline: 2px solid #dc2626;
+  outline-offset: 1px;
+}
+
 .section-alt {
   background: color-mix(in srgb, var(--surface) 72%, var(--page-bg));
 }
