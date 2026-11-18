@@ -30,6 +30,45 @@ function setStatus(message) {
   statusElements.forEach((element) => { element.textContent = message; });
 }
 
+function getReservationContactError(field) {
+  const input = document.querySelector(`[data-${field}]`);
+  if (!input) return "";
+  if (field === "name") return validateField("name", input.value) ? "" : "Введіть ім'я від 2 до 50 символів.";
+  if (field === "phone") return validateField("phone", normalizePhone(input.value)) ? "" : "Введіть коректний телефон.";
+  if (field === "email") return validateField("email", input.value) ? "" : "Введіть коректну адресу email.";
+  if (field === "consent") return input.checked ? "" : "Потрібно погодитися на обробку демо-даних.";
+  return "";
+}
+
+function validateReservationContactField(field, showEmptyError = true) {
+  const input = document.querySelector(`[data-${field}]`);
+  if (!input) return true;
+  const message = getReservationContactError(field);
+  const hasValue = field === "consent" ? input.checked : input.value.trim().length > 0;
+  const visibleMessage = showEmptyError || hasValue ? message : "";
+  input.setAttribute("aria-invalid", visibleMessage ? "true" : "false");
+  let error = document.querySelector(`[data-reservation-error="${field}"]`);
+  if (!error) {
+    error = document.createElement("p");
+    error.className = "mt-2 text-sm text-red-700 dark:text-red-300";
+    error.dataset.reservationError = field;
+    const label = input.closest("label");
+    if (field === "consent") label?.after(error);
+    else label?.append(error);
+  }
+  error.textContent = visibleMessage;
+  return !visibleMessage;
+}
+
+["name", "phone", "email", "consent"].forEach((field) => {
+  const input = document.querySelector(`[data-${field}]`);
+  if (!input) return;
+  input.setAttribute("aria-invalid", "false");
+  const eventName = field === "consent" ? "change" : "input";
+  input.addEventListener(eventName, () => validateReservationContactField(field, false));
+  input.addEventListener("blur", () => validateReservationContactField(field, true));
+});
+
 function createConfirmationDialog(reservation) {
   const dialog = document.createElement("dialog");
   dialog.className = "surface max-w-md rounded-2xl p-6";
@@ -377,12 +416,12 @@ document.querySelectorAll("[data-next]").forEach((button) => button.addEventList
     return;
   }
   if (state.step === 4) {
-    const phone = normalizePhone(document.querySelector("[data-phone]").value);
-    if (!validateField("name", document.querySelector("[data-name]").value)
-      || !validateField("phone", phone)
-      || !validateField("email", document.querySelector("[data-email]").value)
-      || !document.querySelector("[data-consent]").checked) {
-      setStatus("Перевірте ім'я, телефон, email і згоду.");
+    const contactFields = ["name", "phone", "email", "consent"];
+    const valid = contactFields.map((field) => validateReservationContactField(field, true)).every(Boolean);
+    if (!valid) {
+      setStatus("Перевірте виділені поля та згоду.");
+      const firstInvalid = contactFields.find((field) => !validateReservationContactField(field, true));
+      document.querySelector(`[data-${firstInvalid}]`)?.focus();
       return;
     }
   }
